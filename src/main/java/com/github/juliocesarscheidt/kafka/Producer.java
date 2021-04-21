@@ -9,20 +9,19 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Producer {
 	public static KafkaProducer<String, String> getProducer(Properties config) {
 		// create the producer
 		KafkaProducer<String, String> producer = new KafkaProducer<String, String>(config);
-				
+
 		return producer;
 	}
-	
+
 	public static void sendMessage(KafkaProducer<String, String> producer, String topic, String key, String message, final Logger logger) {
 		// send a message to topic, asynchronously
 		ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, key, message);
-				
+
 		producer.send(record, new Callback() {
 			public void onCompletion(RecordMetadata metadata, Exception exception) {
 				if (exception != null) {
@@ -36,49 +35,37 @@ public class Producer {
 			}
 		});
 	}
-	
-	public static void call() {
-		String message = System.getenv("MESSAGE") != null ?
-			System.getenv("MESSAGE") :
-			"Hello World";
-		
-		String bootstrapServers = System.getenv("BOOTSTRAP_SERVERS") != null ?
-			System.getenv("BOOTSTRAP_SERVERS") :
-			"172.16.0.3:9092";
-			
-		String topic = "example_topic";
-		
-		final Logger logger = LoggerFactory.getLogger(Producer.class);
-		
+
+	public static void call(String bootstrapServers, String topic, final Logger logger) {
 		// create the config
 		Properties config = new Properties();
-		
+
 		config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-		
 		// to send strings we need a string serializer
 		config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-
 		config.put(ProducerConfig.ACKS_CONFIG, "all");
-		
+
+    String message = "Hello World";
+
 		// create the producer
 		KafkaProducer<String, String> producer = getProducer(config);
-		
+
 		// send data to a topic
 		for (int i = 0; i < 5; i ++) {
 			// the partition will be chosen according to the key, same key = same partition
 			String key = "id_" + i;
 			String value = message + " :: " + i;
-			
+
 			Producer.sendMessage(producer, topic, key, value, logger);
 		}
-		
+
 		// flush data
 		producer.flush();
-		
+
 		// flush and close
 		producer.close();
-		
+
 		logger.info("[INFO] Finished");
 	}
 }
