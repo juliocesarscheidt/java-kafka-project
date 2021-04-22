@@ -15,12 +15,17 @@ public class Client {
       System.getenv("TOPIC_NAME") :
       "topic_0";
 
-    // producer test
-    Producer producer = new Producer(bootstrapServers, topic, logger);
-    producer.call();
+    try {
+      // producer test
+      Producer producer = new Producer(bootstrapServers, topic, logger);
+      producer.call();
 
-    // producer test
-    Consumer consumer = new Consumer(bootstrapServers, topic, logger);
-    consumer.call();
+      // producer test
+      Consumer consumer = new Consumer(bootstrapServers, topic, logger);
+      consumer.call();
+
+    } catch (Exception e) {
+      logger.error("Error caught " + e.getMessage());
+    }
   }
 }

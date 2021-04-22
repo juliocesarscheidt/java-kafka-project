@@ -5,7 +5,7 @@
 # apt-get install ca-certificates-java
 
 # JAVA_HOME=/usr/java/openjdk-12
-
+# M2_HOME=/opt/apache-maven-3.8.1/
 
 # maven
 mvn -X compile
