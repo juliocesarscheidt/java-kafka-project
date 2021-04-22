@@ -10,6 +10,7 @@ RUN tar xzvf apache-maven-3.8.1-bin.tar.gz && \
     rm apache-maven-3.8.1-bin.tar.gz
 
 ENV PATH=$PATH:/opt/apache-maven-3.8.1/bin
+ENV M2_HOME=/opt/apache-maven-3.8.1/
 
 WORKDIR /app
 
