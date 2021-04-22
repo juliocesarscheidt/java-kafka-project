@@ -13,18 +13,28 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 
 public class Consumer {
-  public static KafkaConsumer<String, String> getConsumer(Properties config) {
+  final private String bootstrapServers;
+  final private String topic;
+  final private Logger logger;
+
+  public Consumer(String bootstrapServers, String topic, final Logger logger) {
+    this.bootstrapServers = bootstrapServers;
+    this.topic = topic;
+    this.logger = logger;
+  }
+
+  public KafkaConsumer<String, String> getConsumer(Properties config) {
     // create the consumer
     KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(config);
 
     return consumer;
   }
 
-  public static void call(String bootstrapServers, String topic, final Logger logger) {
+  public void call() {
     // create the config
     Properties config = new Properties();
 
-    config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+    config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
     // to receive strings we need a string deserializer
     config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -38,10 +48,10 @@ public class Consumer {
     KafkaConsumer<String, String> consumer = getConsumer(config);
 
     // subscribe the consumer on topics
-    consumer.subscribe(Arrays.asList(topic));
+    consumer.subscribe(Arrays.asList(this.topic));
 
     // assign to a topic/partition
-    // TopicPartition partition = new TopicPartition(topic, 0);
+    // TopicPartition partition = new TopicPartition(this.topic, 0);
     // consumer.assign(Arrays.asList(partition));
 
     // seek data
@@ -55,10 +65,10 @@ public class Consumer {
       ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000)); // 1000 milliseconds
 
       for (ConsumerRecord<String, String> record: records) {
-        logger.info("[INFO] record key " + record.key());
-        logger.info("[INFO] record value " + record.value());
-        logger.info("[INFO] record partition " + record.partition());
-        logger.info("[INFO] record offset " + record.offset());
+        this.logger.info("[INFO] record key " + record.key());
+        this.logger.info("[INFO] record value " + record.value());
+        this.logger.info("[INFO] record partition " + record.partition());
+        this.logger.info("[INFO] record offset " + record.offset());
 
         // messagesAlreadyRead += 1;
       }
@@ -69,6 +79,6 @@ public class Consumer {
       // }
     }
 
-    // logger.info("[INFO] Finished");
+    // this.logger.info("[INFO] Finished");
   }
 }

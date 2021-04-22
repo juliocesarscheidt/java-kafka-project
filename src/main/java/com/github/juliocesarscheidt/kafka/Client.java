@@ -9,16 +9,18 @@ public class Client {
 
     String bootstrapServers = System.getenv("BOOTSTRAP_SERVERS") != null ?
       System.getenv("BOOTSTRAP_SERVERS") :
-      "kafka:9092";
+      "localhost:9092";
 
     String topic = System.getenv("TOPIC_NAME") != null ?
       System.getenv("TOPIC_NAME") :
       "topic_0";
 
     // producer test
-    Producer.call(bootstrapServers, topic, logger);
+    Producer producer = new Producer(bootstrapServers, topic, logger);
+    producer.call();
 
     // producer test
-    Consumer.call(bootstrapServers, topic, logger);
+    Consumer consumer = new Consumer(bootstrapServers, topic, logger);
+    consumer.call();
   }
 }
