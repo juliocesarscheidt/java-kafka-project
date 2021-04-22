@@ -1,10 +1,5 @@
 FROM openjdk:12 AS builder
 
-# for debian/ubuntu
-# apt-get install ca-certificates-java
-
-# JAVA_HOME=/usr/java/openjdk-12
-
 WORKDIR /opt
 
 # download maven
@@ -16,21 +11,11 @@ RUN tar xzvf apache-maven-3.8.1-bin.tar.gz && \
 
 ENV PATH=$PATH:/opt/apache-maven-3.8.1/bin
 
-WORKDIR /build
-
-COPY . .
-
-RUN mvn clean compile && \
-    mvn package -DskipTests
-
-# execution stage
-FROM openjdk:12 AS runner
-
 WORKDIR /app
 
-# copy jar artifact
-COPY --from=builder /build/target/kafka-project-0.0.1.jar kafka-project-0.0.1.jar
+COPY . .
+RUN mvn --batch-mode package --file pom.xml -D skipTests
 
 EXPOSE 8080
 
-CMD java $JAVA_OPTIONS -jar /app/kafka-project-0.0.1.jar
+CMD java $JAVA_OPTIONS -jar /app/target/kafka-project-0.0.1.jar
