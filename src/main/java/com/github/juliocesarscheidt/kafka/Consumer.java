@@ -8,7 +8,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-// import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 
@@ -50,17 +49,6 @@ public class Consumer {
     // subscribe the consumer on topics
     consumer.subscribe(Arrays.asList(this.topic));
 
-    // assign to a topic/partition
-    // TopicPartition partition = new TopicPartition(this.topic, 0);
-    // consumer.assign(Arrays.asList(partition));
-
-    // seek data
-    // long offset = 0L;
-    // consumer.seek(partition, offset);
-
-    // int messagesToRead = 5;
-    // int messagesAlreadyRead = 0;
-
     while (true) {
       ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000)); // 1000 milliseconds
 
@@ -69,16 +57,7 @@ public class Consumer {
         this.logger.info("[INFO] record value " + record.value());
         this.logger.info("[INFO] record partition " + record.partition());
         this.logger.info("[INFO] record offset " + record.offset());
-
-        // messagesAlreadyRead += 1;
       }
-
-      // if (messagesAlreadyRead >= messagesToRead) {
-      //   consumer.close();
-      //   break;
-      // }
     }
-
-    // this.logger.info("[INFO] Finished");
   }
 }

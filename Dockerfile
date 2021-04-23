@@ -9,14 +9,17 @@ RUN curl -L \
 RUN tar xzvf apache-maven-3.8.1-bin.tar.gz && \
     rm apache-maven-3.8.1-bin.tar.gz
 
+# put maven on PATH
 ENV PATH=$PATH:/opt/apache-maven-3.8.1/bin
 ENV M2_HOME=/opt/apache-maven-3.8.1/
+
+ENV ARTIFACT_ID=kafka-project
+ENV ARTIFACT_VERSION=0.0.1
 
 WORKDIR /app
 
 COPY . .
+# generate package
 RUN mvn --batch-mode package --file pom.xml -D skipTests
 
-EXPOSE 8080
-
-CMD java $JAVA_OPTIONS -jar /app/target/kafka-project-0.0.1.jar
+CMD java $JAVA_OPTIONS -jar "/app/target/${ARTIFACT_ID}-${ARTIFACT_VERSION}.jar"

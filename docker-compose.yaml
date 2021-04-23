@@ -45,8 +45,6 @@ services:
       JAVA_OPTIONS: -Xmx400m
       BOOTSTRAP_SERVERS: kafka:9092
       TOPIC_NAME: topic_0
-    volumes:
-      - ./:/app
 
 networks:
   subnet_0:
