@@ -75,7 +75,5 @@ public class Producer {
 
     // flush and close
     producer.close();
-
-    this.logger.info("[INFO] Finished");
   }
 }

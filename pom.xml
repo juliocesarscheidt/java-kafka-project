@@ -7,10 +7,14 @@
   <groupId>com.github.juliocesarscheidt</groupId>
   <artifactId>kafka-project</artifactId>
   <version>0.0.1</version>
+  <packaging>jar</packaging>
 
   <properties>
+    <java.version>12</java.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
   <build>
