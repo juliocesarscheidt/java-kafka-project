@@ -6,10 +6,10 @@ on:
 
 jobs:
   build:
-    name: Build Images
+    name: Build PR
     runs-on: ubuntu-latest
     steps:
-    - name: Check out the repo
+    - name: Check out
       uses: actions/checkout@v2
 
     - name: Build Producer Docker image
