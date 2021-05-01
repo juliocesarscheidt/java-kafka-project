@@ -7,11 +7,11 @@ on:
 
 jobs:
   publish:
-    name: PR commented
+    name: Publish Release
     if: ${{ github.event.issue.pull_request && github.event.comment.body == '/publish' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
+      - name: Check out
         uses: actions/checkout@v2
 
       - name: Set up JDK 12 for Producer
