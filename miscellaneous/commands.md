@@ -16,15 +16,21 @@ mvn -X package -DskipTests
 mvn -X --batch-mode package --file pom.xml
 
 
-# java
+# java (producer)
 java $JAVA_OPTIONS -XX:+PrintFlagsFinal \
-  -jar /app/kafka-project-0.0.1.jar
+  -jar /app/kafka-project-producer-0.0.1.jar
 
 java $JAVA_OPTIONS \
-  -jar /app/kafka-project-0.0.1.jar
+  -jar /app/kafka-project-producer-0.0.1.jar
 
-java -classpath src \
-  -jar /app/kafka-project-0.0.1.jar
+
+# java (consumer)
+java $JAVA_OPTIONS -XX:+PrintFlagsFinal \
+  -jar /app/kafka-project-consumer-0.0.1.jar
+
+java $JAVA_OPTIONS \
+  -jar /app/kafka-project-consumer-0.0.1.jar
+
 
 
 # kafka docker
