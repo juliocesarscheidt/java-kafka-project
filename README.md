@@ -13,8 +13,8 @@ Its CI it is made with Github Actions.
 docker-compose up -d kafka zookeeper
 docker-compose logs -f kafka zookeeper
 
-docker-compose up -d kafka-boot
-docker-compose logs -f kafka-boot
+docker-compose up -d kafka-setup
+docker-compose logs -f kafka-setup
 
 docker-compose up -d --build kafka-producer kafka-consumer
 docker-compose logs -f kafka-producer
