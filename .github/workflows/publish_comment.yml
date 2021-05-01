@@ -1,0 +1,35 @@
+name: publish_comment
+
+on:
+  issue_comment:
+    branches: [ main, development ]
+    types: [ created ]
+
+jobs:
+  pr_commented:
+    name: PR commented
+    if: ${{ github.event.issue.pull_request && github.event.comment.body == '/publish' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 12 for Producer
+        uses: actions/setup-java@v2
+        with:
+          java-version: '12'
+          distribution: 'adopt'
+
+      - name: Publish Producer to GitHub Packages
+        working-directory: producer
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn --batch-mode deploy
+        # https://maven.pkg.github.com/juliocesarscheidt/java-kafka-project/com/github/juliocesarscheidt/kafka-project/0.0.1/kafka-project-producer-0.0.1.jar
+
+      - name: Publish Consumer to GitHub Packages
+        working-directory: consumer
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn --batch-mode deploy
+        # https://maven.pkg.github.com/juliocesarscheidt/java-kafka-project/com/github/juliocesarscheidt/kafka-project/0.0.1/kafka-project-consumer-0.0.1.jar
