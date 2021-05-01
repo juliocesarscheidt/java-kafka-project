@@ -1,8 +1,11 @@
 # Kafka Java Project
 
-![build](https://github.com/juliocesarscheidt/java-kafka-project/actions/workflows/build_pull_request.yml/badge.svg)
+![Build PR](https://github.com/juliocesarscheidt/java-kafka-project/actions/workflows/build_pr.yml/badge.svg)
+![Build Push](https://github.com/juliocesarscheidt/java-kafka-project/actions/workflows/build_push.yml/badge.svg)
 
-This project is a test with Kafka using Java client, running everything inside docker containers.
+This project was created with Kafka using Java client, with a producer and a consumer, running everything inside docker containers and the dependencies are managed by Maven.
+
+Its CI it is made with Github Actions.
 
 ## Up and Running
 
