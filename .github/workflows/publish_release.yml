@@ -6,7 +6,7 @@ on:
     types: [ created ]
 
 jobs:
-  pr_commented:
+  publish:
     name: PR commented
     if: ${{ github.event.issue.pull_request && github.event.comment.body == '/publish' }}
     runs-on: ubuntu-latest
