@@ -1,0 +1,26 @@
+name: build_push
+
+on:
+  push:
+    branches: [ main, development ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 12 for Packaging
+      uses: actions/setup-java@v2
+      with:
+        java-version: '12'
+        distribution: 'adopt'
+
+    - name: Package Producer with Maven
+      working-directory: producer
+      run: mvn --batch-mode package --file pom.xml -D skipTests
+
+    - name: Package Consumer with Maven
+      working-directory: consumer
+      run: mvn --batch-mode package --file pom.xml -D skipTests

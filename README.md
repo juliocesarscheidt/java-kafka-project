@@ -1,6 +1,6 @@
 # Kafka Java Project
 
-![build](https://github.com/juliocesarscheidt/java-kafka-project/actions/workflows/build.yml/badge.svg)
+![build](https://github.com/juliocesarscheidt/java-kafka-project/actions/workflows/build_pull_request.yml/badge.svg)
 
 This project is a test with Kafka using Java client, running everything inside docker containers.
 
@@ -14,5 +14,6 @@ docker-compose up -d kafka-boot
 docker-compose logs -f kafka-boot
 
 docker-compose up -d --build kafka-producer kafka-consumer
-docker-compose logs -f kafka-producer kafka-consumer
+docker-compose logs -f kafka-producer
+docker-compose logs -f kafka-consumer
 ```
