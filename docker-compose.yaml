@@ -35,23 +35,18 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  kafka-boot:
-    container_name: kafka-boot
-    hostname: kafka-boot
-    image: confluentinc/cp-kafka:6.0.0
+  kafka-setup:
+    container_name: kafka-setup
+    hostname: kafka-setup
+    image: juliocesarmidia/kafka-setup:6.0.0
+    build:
+      context: ./kafka-setup
     restart: "no"
     networks:
       - subnet_0
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      TOPIC: ${TOPIC:-topic_0}
-    command: >
-      sh -c "env && sleep 10 &&
-      kafka-topics
-      --zookeeper $$KAFKA_ZOOKEEPER_CONNECT
-      --create --topic $$TOPIC --partitions 1
-      --replication-factor 1 --if-not-exists &&
-      kafka-topics --zookeeper $$KAFKA_ZOOKEEPER_CONNECT --list | egrep -v '^_'"
+      TOPICS: ${TOPICS:-topic_0}
 
   kafka-producer:
     container_name: kafka-producer
