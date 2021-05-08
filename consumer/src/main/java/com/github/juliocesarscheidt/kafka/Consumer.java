@@ -29,7 +29,7 @@ public class Consumer {
     return consumer;
   }
 
-  public void call() {
+  public void start() {
     // create the config
     Properties config = new Properties();
 

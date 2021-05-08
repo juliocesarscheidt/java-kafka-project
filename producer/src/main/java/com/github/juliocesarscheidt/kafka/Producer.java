@@ -46,7 +46,7 @@ public class Producer {
     });
   }
 
-  public void call() {
+  public void start() {
     // create the config
     Properties config = new Properties();
 
