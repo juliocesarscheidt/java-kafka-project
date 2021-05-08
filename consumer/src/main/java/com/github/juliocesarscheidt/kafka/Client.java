@@ -18,7 +18,7 @@ public class Client {
     try {
       // producer test
       Consumer consumer = new Consumer(bootstrapServers, topic, logger);
-      consumer.call();
+      consumer.start();
 
     } catch (Exception e) {
       logger.error("Error caught " + e.getMessage());
