@@ -9,7 +9,7 @@ public class Client {
 
     String bootstrapServers = System.getenv("BOOTSTRAP_SERVERS") != null ?
       System.getenv("BOOTSTRAP_SERVERS") :
-      "172.16.0.3:9092";
+      "127.0.0.1:9092";
 
     String topic = System.getenv("TOPIC_NAME") != null ?
       System.getenv("TOPIC_NAME") :
