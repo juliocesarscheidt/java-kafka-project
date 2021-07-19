@@ -16,7 +16,9 @@ docker-compose logs -f kafka zookeeper
 docker-compose up -d kafka-setup
 docker-compose logs -f kafka-setup
 
-docker-compose up -d --build kafka-producer kafka-consumer
+docker-compose up -d --build kafka-producer
 docker-compose logs -f kafka-producer
+
+docker-compose up -d --build kafka-consumer
 docker-compose logs -f kafka-consumer
 ```
