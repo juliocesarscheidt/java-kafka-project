@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Built-By: julio
-Build-Jdk: 11.0.7
-Main-Class: com.github.juliocesarscheidt.kafka.Client
-Created-By: Maven Integration for Eclipse
-
