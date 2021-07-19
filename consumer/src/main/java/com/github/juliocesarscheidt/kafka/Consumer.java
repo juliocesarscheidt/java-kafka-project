@@ -1,6 +1,8 @@
 package com.github.juliocesarscheidt.kafka;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -42,21 +44,33 @@ public class Consumer {
     config.put(ConsumerConfig.GROUP_ID_CONFIG, groupID);
     // earliest, latest, none
     config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+    // auto commit false
+    config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
     // create consumer
     KafkaConsumer<String, String> consumer = getConsumer(config);
+
+    int minBatchSize = 200;
+    List<ConsumerRecord<String, String>> buffer = new ArrayList<>();
 
     // subscribe the consumer on topics
     consumer.subscribe(Arrays.asList(this.topic));
 
     while (true) {
-      ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000)); // 1000 milliseconds
+      ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(5000)); // 5000 milliseconds
 
       for (ConsumerRecord<String, String> record: records) {
+        buffer.add(record);
+
         this.logger.info("[INFO] record key " + record.key());
         this.logger.info("[INFO] record value " + record.value());
         this.logger.info("[INFO] record partition " + record.partition());
         this.logger.info("[INFO] record offset " + record.offset());
+      }
+
+      if (buffer.size() >= minBatchSize) {
+        consumer.commitSync();
+        buffer.clear();
       }
     }
   }

@@ -26,3 +26,11 @@
 <https://docs.github.com/pt/actions/reference/events-that-trigger-workflows>
 <https://docs.github.com/pt/actions/reference/context-and-expression-syntax-for-github-actions#operators>
 <https://docs.github.com/pt/actions/reference/workflow-syntax-for-github-actions>
+
+> Twitter API
+
+<https://developer.twitter.com/en/docs/twitter-api/v1/tweets/search/api-reference/get-search-tweets>
+<https://developer.twitter.com/en/docs/authentication/api-reference/token>
+<https://developer.twitter.com/en/docs/twitter-api/tweets/search/quick-start/recent-search>
+<https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query>
+<https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/quick-start>

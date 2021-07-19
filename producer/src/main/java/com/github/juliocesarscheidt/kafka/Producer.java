@@ -21,7 +21,16 @@ public class Producer {
     this.logger = logger;
   }
 
-  public KafkaProducer<String, String> getProducer(Properties config) {
+  public KafkaProducer<String, String> createProducer() {
+    // create the config
+    Properties config = new Properties();
+
+    config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
+    // to send strings we need a string serializer
+    config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    config.put(ProducerConfig.ACKS_CONFIG, "all");
+
     // create the producer
     KafkaProducer<String, String> producer = new KafkaProducer<String, String>(config);
 
@@ -47,19 +56,10 @@ public class Producer {
   }
 
   public void start() {
-    // create the config
-    Properties config = new Properties();
-
-    config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
-    // to send strings we need a string serializer
-    config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-    config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-    config.put(ProducerConfig.ACKS_CONFIG, "all");
+    // create the producer
+    KafkaProducer<String, String> producer = this.createProducer();
 
     String message = "Hello World";
-
-    // create the producer
-    KafkaProducer<String, String> producer = this.getProducer(config);
 
     // send data to a topic
     for (int i = 0; i < 5; i ++) {

@@ -34,6 +34,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
 
   kafka-setup:
     container_name: kafka-setup
@@ -59,6 +60,12 @@ services:
       JAVA_OPTIONS: -Xmx400m
       BOOTSTRAP_SERVERS: kafka:9092
       TOPIC_NAME: topic_0
+      TWITTER_CONSUMER_KEY: ${TWITTER_CONSUMER_KEY}
+      TWITTER_CONSUMER_SECRET: ${TWITTER_CONSUMER_SECRET}
+      TWITTER_ACCESS_TOKEN: ${TWITTER_ACCESS_TOKEN}
+      TWITTER_ACCESS_TOKEN_SECRET: ${TWITTER_ACCESS_TOKEN_SECRET}
+    volumes:
+      - maven-data-producer:/root/.m2
 
   kafka-consumer:
     container_name: kafka-consumer
@@ -71,6 +78,8 @@ services:
       JAVA_OPTIONS: -Xmx400m
       BOOTSTRAP_SERVERS: kafka:9092
       TOPIC_NAME: topic_0
+    volumes:
+      - maven-data-consumer:/root/.m2
 
 networks:
   subnet_0:
@@ -78,3 +87,5 @@ networks:
 
 volumes:
   zookeeper-data: {}
+  maven-data-producer: {}
+  maven-data-consumer: {}
