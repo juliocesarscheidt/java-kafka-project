@@ -24,7 +24,26 @@ public class Consumer {
     this.logger = logger;
   }
 
-  public KafkaConsumer<String, String> getConsumer(Properties config) {
+  public KafkaConsumer<String, String> getConsumer() {
+    // create the config
+    Properties config = new Properties();
+
+    config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
+
+    // to receive strings we need a string deserializer
+    config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+    config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+
+    // the consumer group id
+    String groupID = "example_group_id";
+    config.put(ConsumerConfig.GROUP_ID_CONFIG, groupID);
+
+    // earliest, latest, none
+    config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+    // auto commit false
+    config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+
     // create the consumer
     KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(config);
 
@@ -32,25 +51,10 @@ public class Consumer {
   }
 
   public void start() {
-    // create the config
-    Properties config = new Properties();
-
-    config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
-    // to receive strings we need a string deserializer
-    config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-    config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-    // the consumer group id
-    String groupID = "example_group_id";
-    config.put(ConsumerConfig.GROUP_ID_CONFIG, groupID);
-    // earliest, latest, none
-    config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-    // auto commit false
-    config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-
     // create consumer
-    KafkaConsumer<String, String> consumer = getConsumer(config);
+    KafkaConsumer<String, String> consumer = getConsumer();
 
-    int minBatchSize = 200;
+    int minBatchSize = 5; // a few messages to try out
     List<ConsumerRecord<String, String>> buffer = new ArrayList<>();
 
     // subscribe the consumer on topics
@@ -69,6 +73,7 @@ public class Consumer {
       }
 
       if (buffer.size() >= minBatchSize) {
+        // commit the offset
         consumer.commitSync();
         buffer.clear();
       }
