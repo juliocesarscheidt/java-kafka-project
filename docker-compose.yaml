@@ -35,6 +35,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_MIN_INSYNC_REPLICAS: 1
 
   # kafka-setup:
   #   container_name: kafka-setup

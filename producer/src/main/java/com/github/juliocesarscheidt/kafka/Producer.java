@@ -26,9 +26,11 @@ public class Producer {
     Properties config = new Properties();
 
     config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
+
     // to send strings we need a string serializer
     config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+
     // acks
     // 0 = means no acks (no response is requested)
     // 1 = means leader acks (leader response is requested)
