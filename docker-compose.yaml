@@ -36,18 +36,18 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
 
-  kafka-setup:
-    container_name: kafka-setup
-    hostname: kafka-setup
-    image: juliocesarmidia/kafka-setup:6.0.0
-    build:
-      context: ./kafka-setup
-    restart: "no"
-    networks:
-      - subnet_0
-    environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      TOPICS: ${TOPICS:-topic_0}
+  # kafka-setup:
+  #   container_name: kafka-setup
+  #   hostname: kafka-setup
+  #   image: juliocesarmidia/kafka-setup:6.0.0
+  #   build:
+  #     context: ./kafka-setup
+  #   restart: "no"
+  #   networks:
+  #     - subnet_0
+  #   environment:
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     TOPICS: ${TOPICS:-topic_0}
 
   kafka-producer:
     container_name: kafka-producer
@@ -64,8 +64,6 @@ services:
       TWITTER_CONSUMER_SECRET: ${TWITTER_CONSUMER_SECRET}
       TWITTER_ACCESS_TOKEN: ${TWITTER_ACCESS_TOKEN}
       TWITTER_ACCESS_TOKEN_SECRET: ${TWITTER_ACCESS_TOKEN_SECRET}
-    volumes:
-      - maven-data-producer:/root/.m2
 
   kafka-consumer:
     container_name: kafka-consumer
@@ -78,8 +76,6 @@ services:
       JAVA_OPTIONS: -Xmx400m
       BOOTSTRAP_SERVERS: kafka:9092
       TOPIC_NAME: topic_0
-    volumes:
-      - maven-data-consumer:/root/.m2
 
 networks:
   subnet_0:
@@ -87,5 +83,3 @@ networks:
 
 volumes:
   zookeeper-data: {}
-  maven-data-producer: {}
-  maven-data-consumer: {}

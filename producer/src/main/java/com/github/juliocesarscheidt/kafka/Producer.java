@@ -29,6 +29,10 @@ public class Producer {
     // to send strings we need a string serializer
     config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    // acks
+    // 0 = means no acks (no response is requested)
+    // 1 = means leader acks (leader response is requested)
+    // all = means leader and replicas acks (leader and replicas responses are requested)
     config.put(ProducerConfig.ACKS_CONFIG, "all");
 
     // create the producer
@@ -42,6 +46,7 @@ public class Producer {
     ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, key, message);
 
     producer.send(record, new Callback() {
+      @Override
       public void onCompletion(RecordMetadata metadata, Exception exception) {
         if (exception != null) {
           logger.error("Send failed for record " + exception);

@@ -51,14 +51,12 @@ public class TwitterProducer {
     StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
 
     List<String> searches = Arrays.asList("Bitcoin");
-
     hosebirdEndpoint.trackTerms(searches);
 
     String consumerKey = System.getenv("TWITTER_CONSUMER_KEY") != null ?
       System.getenv("TWITTER_CONSUMER_KEY") : "";
     String consumerSecret = System.getenv("TWITTER_CONSUMER_SECRET") != null ?
       System.getenv("TWITTER_CONSUMER_SECRET") : "";
-
     String accessToken = System.getenv("TWITTER_ACCESS_TOKEN") != null ?
       System.getenv("TWITTER_ACCESS_TOKEN") : "";
     String accessTokenSecret = System.getenv("TWITTER_ACCESS_TOKEN_SECRET") != null ?
@@ -80,7 +78,17 @@ public class TwitterProducer {
     // Attempts to establish a connection.
     hosebirdClient.connect();
 
-    // on a different thread, or multiple different threads....
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      logger.info("Stopping application");
+
+      logger.info("Shutting down client");
+      hosebirdClient.stop();
+
+      logger.info("Flushing and closing producer");
+      producer.flush();
+      producer.close();
+    }));
+
     while (!hosebirdClient.isDone()) {
       String msg;
 
@@ -89,9 +97,7 @@ public class TwitterProducer {
 
         if (msg != null) {
           logger.info(msg);
-
-          // it goes to the same partition
-          this.producer.sendMessage(producer, this.topic, "key", msg, this.logger);
+          this.producer.sendMessage(producer, this.topic, null, msg, this.logger);
         }
 
       } catch (InterruptedException e) {
@@ -101,11 +107,5 @@ public class TwitterProducer {
         hosebirdClient.stop();
       }
     }
-
-    // flush data
-    producer.flush();
-
-    // flush and close
-    producer.close();
   }
 }
