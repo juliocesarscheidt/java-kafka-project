@@ -25,27 +25,15 @@ import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 
-public class TwitterProducer {
-  final private String bootstrapServers;
-  final private String topic;
-  final private Logger logger;
-  private Producer producer;
-
+public class TwitterProducer extends Producer {
   public TwitterProducer(String bootstrapServers, String topic, final Logger logger) {
-    this.bootstrapServers = bootstrapServers;
-    this.topic = topic;
-    this.logger = logger;
-
-    this.producer = new Producer(bootstrapServers, topic, logger);
+    super(bootstrapServers, topic, logger);
   }
 
+  @Override
   public void start() {
-    // create the producer
-    KafkaProducer<String, String> producer = this.producer.createProducer();
-
     // creating queues
     BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000);
-    BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<Event>(1000);
 
     Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
     StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
@@ -71,40 +59,37 @@ public class TwitterProducer {
       .hosts(hosebirdHosts)
       .authentication(hosebirdAuth)
       .endpoint(hosebirdEndpoint)
-      .processor(new StringDelimitedProcessor(msgQueue))
-      .eventMessageQueue(eventQueue);                          // optional: use this if you want to process client events
+      .processor(new StringDelimitedProcessor(msgQueue));
 
     com.twitter.hbc.core.Client hosebirdClient = builder.build();
     // Attempts to establish a connection.
     hosebirdClient.connect();
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      logger.info("Stopping application");
+      logger.info("Stopping Application :: TwitterProducer");
 
-      logger.info("Shutting down client");
+      logger.info("Shutting down Hosebird Client :: TwitterProducer");
       hosebirdClient.stop();
 
-      logger.info("Flushing and closing producer");
-      producer.flush();
-      producer.close();
+      logger.info("Flushing and Closing :: TwitterProducer");
+      this.producer.flush();
+      this.producer.close();
     }));
 
     while (!hosebirdClient.isDone()) {
-      String msg;
+      String msg = null;
 
       try {
         msg = msgQueue.poll(10, TimeUnit.SECONDS); // 10 seconds polling
 
-        if (msg != null) {
-          logger.info(msg);
-          this.producer.sendMessage(producer, this.topic, null, msg, this.logger);
-        }
-
       } catch (InterruptedException e) {
         e.printStackTrace();
-
-      } finally {
         hosebirdClient.stop();
+      }
+
+      if (msg != null) {
+        logger.info(msg);
+        this.sendMessage(this.producer, this.topic, null, msg, this.logger);
       }
     }
   }
