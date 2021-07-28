@@ -19,3 +19,9 @@ docker-compose logs -f kafka-producer
 docker-compose up -d --build kafka-consumer
 docker-compose logs -f kafka-consumer
 ```
+
+## Docs
+
+Kafka Producer configuration:
+
+<https://jaceklaskowski.gitbooks.io/apache-kafka/content/kafka-producer-ProducerConfig.html>
