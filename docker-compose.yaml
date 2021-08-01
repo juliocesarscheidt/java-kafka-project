@@ -37,6 +37,39 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
       KAFKA_MIN_INSYNC_REPLICAS: 1
 
+  elastic:
+    container_name: elastic
+    hostname: elastic
+    image: juliocesarmidia/elasticsearch:7.7.0
+    # image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+    build:
+      context: ./elasticsearch
+    restart: on-failure
+    networks:
+      - subnet_0
+    ports:
+      - 9200:9200
+      - 9300:9300
+    # tty: true
+    # stdin_open: true
+    environment:
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      bootstrap.memory_lock: "true"
+      discovery.type: "single-node"
+      node.name: elastic
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    stop_grace_period: 10s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9200/_cluster/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
   # kafka-setup:
   #   container_name: kafka-setup
   #   hostname: kafka-setup
@@ -77,6 +110,8 @@ services:
       JAVA_OPTIONS: -Xmx400m
       BOOTSTRAP_SERVERS: kafka:9092
       TOPIC_NAME: topic_0
+      ELASTICSEARCH_HOST: elastic
+      ELASTICSEARCH_PORT: 9200
 
 networks:
   subnet_0:
@@ -84,3 +119,4 @@ networks:
 
 volumes:
   zookeeper-data: {}
+  elasticsearch-data: {}

@@ -13,6 +13,9 @@ Its CI it is made with Github Actions.
 docker-compose up -d kafka zookeeper
 docker-compose logs -f kafka zookeeper
 
+docker-compose up -d --build elastic
+docker-compose logs -f elastic
+
 docker-compose up -d --build kafka-producer
 docker-compose logs -f kafka-producer
 

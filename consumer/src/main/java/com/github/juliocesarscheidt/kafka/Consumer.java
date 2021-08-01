@@ -13,18 +13,33 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 
+import com.google.gson.JsonParser;
+
 public class Consumer {
-  final private String bootstrapServers;
-  final private String topic;
-  final private Logger logger;
+  protected String bootstrapServers;
+  protected String topic;
+  protected Logger logger;
+  protected KafkaConsumer<String, String> consumer;
+
+  public String extractValueFromJson(String jsonString, String field) {
+    JsonParser parser = new JsonParser();
+
+    return parser.parse(jsonString)
+      .getAsJsonObject()
+      .get(field)
+      .getAsString();
+  }
 
   public Consumer(String bootstrapServers, String topic, final Logger logger) {
     this.bootstrapServers = bootstrapServers;
     this.topic = topic;
     this.logger = logger;
+
+	// create the consumer
+    this.consumer = createConsumer();
   }
 
-  public KafkaConsumer<String, String> getConsumer() {
+  public KafkaConsumer<String, String> createConsumer() {
     // create the config
     Properties config = new Properties();
 
@@ -35,13 +50,13 @@ public class Consumer {
     config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 
     // the consumer group id
-    String groupID = "example_group_id";
+    String groupID = "kafka-elasticsearch-group";
     config.put(ConsumerConfig.GROUP_ID_CONFIG, groupID);
 
     // earliest, latest, none
     config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
-    // auto commit false
+    // auto commit
     config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
     // create the consumer
@@ -51,17 +66,14 @@ public class Consumer {
   }
 
   public void start() {
-    // create consumer
-    KafkaConsumer<String, String> consumer = getConsumer();
-
-    int minBatchSize = 5; // a few messages to try out
+    int minBatchSize = 100; // a few messages to try out
     List<ConsumerRecord<String, String>> buffer = new ArrayList<>();
 
     // subscribe the consumer on topics
-    consumer.subscribe(Arrays.asList(this.topic));
+    this.consumer.subscribe(Arrays.asList(this.topic));
 
     while (true) {
-      ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(5000)); // 5000 milliseconds
+      ConsumerRecords<String, String> records = this.consumer.poll(Duration.ofMillis(5000)); // 5000 milliseconds
 
       for (ConsumerRecord<String, String> record: records) {
         buffer.add(record);
@@ -73,8 +85,10 @@ public class Consumer {
       }
 
       if (buffer.size() >= minBatchSize) {
+        this.logger.info("[INFO] committing messages");
+
         // commit the offset
-        consumer.commitSync();
+        this.consumer.commitSync();
         buffer.clear();
       }
     }
