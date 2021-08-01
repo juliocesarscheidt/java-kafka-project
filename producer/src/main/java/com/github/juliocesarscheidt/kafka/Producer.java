@@ -81,11 +81,11 @@ public class Producer {
     return producer;
   }
 
-  public void sendMessage(KafkaProducer<String, String> producer, String topic, String key, String message, final Logger logger) {
+  public void sendMessage(String topic, String key, String message, final Logger logger) {
     // send a message to topic, asynchronously
     ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, key, message);
 
-    producer.send(record, new Callback() {
+    this.producer.send(record, new Callback() {
       @Override
       public void onCompletion(RecordMetadata metadata, Exception exception) {
         if (exception != null) {
@@ -117,7 +117,7 @@ public class Producer {
       String key = "id_" + i;
       String value = message + " :: " + i;
 
-      this.sendMessage(this.producer, this.topic, key, value, this.logger);
+      this.sendMessage(this.topic, key, value, this.logger);
     }
   }
 }

@@ -33,7 +33,7 @@ public class TwitterProducer extends Producer {
   @Override
   public void start() {
     // creating queues
-    BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000);
+    BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(100);
 
     Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
     StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
@@ -80,7 +80,7 @@ public class TwitterProducer extends Producer {
       String msg = null;
 
       try {
-        msg = msgQueue.poll(10, TimeUnit.SECONDS); // 10 seconds polling
+        msg = msgQueue.poll(5000, TimeUnit.MILLISECONDS); // 5000 milliseconds polling
 
       } catch (InterruptedException e) {
         e.printStackTrace();
@@ -89,7 +89,7 @@ public class TwitterProducer extends Producer {
 
       if (msg != null) {
         logger.info(msg);
-        this.sendMessage(this.producer, this.topic, null, msg, this.logger);
+        this.sendMessage(this.topic, null, msg, this.logger);
       }
     }
   }
