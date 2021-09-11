@@ -35,7 +35,7 @@ public class Consumer {
     this.topic = topic;
     this.logger = logger;
 
-	// create the consumer
+	  // create the consumer
     this.consumer = createConsumer();
   }
 
@@ -59,10 +59,11 @@ public class Consumer {
     // auto commit
     config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
-    // create the consumer
-    KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(config);
+    // max poll records
+    config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);
 
-    return consumer;
+    // create the consumer
+    return new KafkaConsumer<String, String>(config);
   }
 
   public void start() {

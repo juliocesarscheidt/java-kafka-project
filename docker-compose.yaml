@@ -43,7 +43,6 @@ services:
     container_name: elastic
     hostname: elastic
     image: juliocesarmidia/elasticsearch:7.7.0
-    # image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
     build:
       context: ./elasticsearch
     restart: on-failure
@@ -52,13 +51,12 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
-    # tty: true
-    # stdin_open: true
     environment:
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
       bootstrap.memory_lock: "true"
       discovery.type: "single-node"
-      node.name: elastic
+      node.name: "elastic"
+      cluster.name: "elastic-cluster"
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
@@ -71,19 +69,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
-
-  # kafka-setup:
-  #   container_name: kafka-setup
-  #   hostname: kafka-setup
-  #   image: juliocesarmidia/kafka-setup:6.0.0
-  #   build:
-  #     context: ./kafka-setup
-  #   restart: "no"
-  #   networks:
-  #     - subnet_0
-  #   environment:
-  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #     TOPICS: ${TOPICS:-topic_0}
 
   kafka-producer:
     container_name: kafka-producer
