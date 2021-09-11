@@ -7,8 +7,9 @@ import java.util.Arrays;
 import org.apache.http.HttpHost;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -39,8 +40,24 @@ public class ElasticsearchConsumer extends Consumer {
   public void start() {
     this.consumer.subscribe(Arrays.asList(this.topic));
 
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      logger.info("Stopping Application :: ElasticsearchConsumer");
+
+      this.consumer.commitSync();
+      logger.info("Offsets have been committed");
+
+      logger.info("Flushing and Closing :: ElasticsearchConsumer");
+      this.consumer.close();
+    }));
+
     while (true) {
       ConsumerRecords<String, String> records = this.consumer.poll(Duration.ofMillis(5000)); // 5000 milliseconds
+
+      Integer recordsCount = records.count();
+      this.logger.info("Received " + recordsCount + " records");
+
+      // create a new bulk request
+      BulkRequest bulkRequest = new BulkRequest();
 
       for (ConsumerRecord<String, String> record: records) {
         this.logger.info("[INFO] record key " + record.key());
@@ -52,31 +69,36 @@ public class ElasticsearchConsumer extends Consumer {
 
         // generica kafka id
         // String kafkaId = record.topic() + "_" + record.partition() + "_" + record.offset();
-
-        // id from tweet
-        String id = extractValueFromJson(record.value(), "id_str");
-
-        @SuppressWarnings("deprecation")
-        IndexRequest req = new IndexRequest("twitter", "tweets")
-          .id(id)
-          .source(messageString, XContentType.JSON);
-
         try {
-          IndexResponse resp = elasticClient.index(req, RequestOptions.DEFAULT);
-          logger.info(resp.getId());
+          // id from tweet
+          String id = extractValueFromJson(record.value(), "id_str");
 
-          Thread.sleep(1000); // 1000 ms
+          @SuppressWarnings("deprecation")
+          IndexRequest req = new IndexRequest("twitter", "tweets")
+            .id(id)
+            .source(messageString, XContentType.JSON);
+
+          bulkRequest.add(req);
+
+        } catch (NullPointerException e) {
+          this.logger.error(e.getMessage());
+        }
+      }
+
+      if (recordsCount > 0) {
+        try {
+          BulkResponse resp = elasticClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+          logger.info(resp.toString());
+
+          this.consumer.commitSync();
+          logger.info("Offsets have been committed");
+
+          Thread.sleep(1000);
 
         } catch (IOException | InterruptedException e) {
           this.logger.error(e.getMessage());
         }
       }
     }
-
-    // try {
-    //   this.elasticClient.close();
-    // } catch (IOException e) {
-    //   e.printStackTrace();
-    // }
   }
 }

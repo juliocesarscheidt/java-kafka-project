@@ -58,6 +58,9 @@ public class Consumer {
 
     // auto commit
     config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+    
+    // max poll records
+    config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);
 
     // create the consumer
     KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(config);
