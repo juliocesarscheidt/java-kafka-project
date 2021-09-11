@@ -76,9 +76,7 @@ public class Producer {
     config.put(ProducerConfig.LINGER_MS_CONFIG, 5); // 5 ms
 
     // create the producer
-    KafkaProducer<String, String> producer = new KafkaProducer<String, String>(config);
-
-    return producer;
+    return new KafkaProducer<String, String>(config);
   }
 
   public void sendMessage(String topic, String key, String message, final Logger logger) {
